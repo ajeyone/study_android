@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ClockView">
+        <attr name="lineWidth" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="CircleGroupView_Layout">
+        <attr name="layout_distance" format="dimension" />
+        <attr name="layout_angle" format="float" />
+    </declare-styleable>
+</resources>

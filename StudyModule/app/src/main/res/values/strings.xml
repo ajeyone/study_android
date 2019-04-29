@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Study001</string>
+    <string name="main_activity">Main Page</string>
+    <string name="second_activity">Second Page</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="launch_mode_a">LaunchMode A</string>
+    <string name="launch_mode_b">LaunchMode B</string>
+</resources>

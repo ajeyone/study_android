@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.FirstFragment">
+
+    <com.ajeyone.study001.views.CircleGroupView
+        android:background="#f0f022"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <View
+            android:background="#000000"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            app:layout_distance="0dp"
+            app:layout_angle="0" />
+
+        <View
+            android:background="#ffffff"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_distance="40dp"
+            app:layout_angle="300" />
+
+        <View
+            android:background="#990099"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_distance="40dp"
+            app:layout_angle="33" />
+
+        <View
+            android:background="#990022"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_distance="40dp"
+            app:layout_angle="123" />
+
+        <View
+            android:background="#ff0000"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:layout_distance="40dp"
+            app:layout_angle="270" />
+
+        <com.ajeyone.study001.views.ClockView
+            android:id="@+id/clock_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="top"
+            android:background="#30000000"
+            app:layout_angle="-45"
+            app:layout_distance="200dp"
+            app:lineWidth="18dp" />
+    </com.ajeyone.study001.views.CircleGroupView>
+</FrameLayout>
