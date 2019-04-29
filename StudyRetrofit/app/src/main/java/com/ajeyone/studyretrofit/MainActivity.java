@@ -1,36 +1,42 @@
 package com.ajeyone.studyretrofit;
 
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.ajeyone.studyretrofit.data.BaiduPOIBean;
 import com.ajeyone.studyretrofit.data.BaiduPOISearchResponse;
 import com.bumptech.glide.Glide;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
@@ -61,25 +67,71 @@ public class MainActivity extends AppCompatActivity {
 
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(BAIDU_MAP_BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
-        loadData();
     }
 
-    private void loadData() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_call) {
+            mAdapter.setPOIBeans(new ArrayList<>());
+            loadDataUsingCall();
+        } else if (id == R.id.action_rxjava) {
+            mAdapter.setPOIBeans(new ArrayList<>());
+            loadDataUsingObservable();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private void loadDataUsingObservable() {
+        BaiduMapService service = mRetrofit.create(BaiduMapService.class);
+        service.searchPOI_Observable("洗手间", "39.915,116.404", 1000, "json", BuildConfig.BAIDU_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaiduPOISearchResponse>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaiduPOISearchResponse resp) {
+                        if (resp != null && resp.results != null) {
+                            mAdapter.setPOIBeans(resp.results);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void loadDataUsingCall() {
         //http://api.map.baidu.com/place/v2/search?query=银行&location=39.915,116.404&radius=2000&output=json&ak=密钥
         BaiduMapService service = mRetrofit.create(BaiduMapService.class);
-        Call<BaiduPOISearchResponse> call = service.searchPOI("洗手间", "39.915,116.404", 1000, "json", BuildConfig.BAIDU_API_KEY);
+        Call<BaiduPOISearchResponse> call = service.searchPOI_Call("洗手间", "39.915,116.404", 1000, "json", BuildConfig.BAIDU_API_KEY);
         call.enqueue(new Callback<BaiduPOISearchResponse>() {
             @Override
             public void onResponse(Call<BaiduPOISearchResponse> call, Response<BaiduPOISearchResponse> resp) {
                 BaiduPOISearchResponse response = resp.body();
-                Log.d(TAG, "onResponse: " + response);
                 if (response != null && response.results != null) {
-                    for (BaiduPOIBean bean : response.results) {
-                        Log.d(TAG, "onResponse: poi: " + bean);
-                    }
                     mAdapter.setPOIBeans(response.results);
                 }
             }
@@ -181,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
         @BindView(R.id.address)
         TextView addressTextView;
         @BindView(R.id.button_street)
-        ImageButton streetButton;
+        ImageView streetButton;
 
         BaiduPOIBean data;
 
